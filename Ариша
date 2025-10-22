@@ -1,0 +1,115 @@
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, CallbackQueryHandler
+import random
+
+# Вставь сюда свой токен
+TOKEN = "8202820837:AAHxR7ro2zbIdOI0lzRbRArjurihbIOthzc"
+
+# Список стихов
+poems = [
+    """Твои глаза — как два огня,
+В них столько нежности, тепла.
+Арина, светлая моя,
+Ты в сердце навсегда вошла.
+
+Как утро, нежна и ясна,
+Как ветер, лёгка и вольна.
+Ты — песня, что в душе звучит,
+Ты — счастье, что меня хранит.
+
+Пусть каждый день, как яркий сон,
+Дарит улыбки миллион.
+Арина, ангел мой земной,
+Я так горжусь, что ты со мной!""",
+
+    """Пишу тебе я о любви,
+Прошу, моё послание сохрани.
+Неважно где! Быть может очень близко к сердцу, а может где-то на поверхности.
+Неважно где! Главное храни.
+
+Ведь в этих строках говорится,
+О том, как сильно я люблю,
+О том, как без тебя я не смогу,
+Ведь моя любовь летает выше птиц.
+
+«Любовь… её надо ценить» —
+Скажет даже нелюбимый.
+Но есть отдельный тип людей,
+Те, кто скажет, что любви и вовсе нет.
+
+Все они талдычат чушь.
+«Любовь — биохимический процесс в нашей голове. Форма заболевания».
+Я не буду верить в это.
+Жизнь без любви для человека — смерть.
+
+Когда любви нет, то я кукла, мёртвый дух,
+А ведь как мало тех, с кем хочется мечтать!
+И как мало тех, с кем хочется молчать!
+Как много тех, с кем просто можно жить!
+
+Пить утром кофе, говорить и спорить…
+С кем можно проводить закат,
+И как положено — и в радости, и в горе быть рядом,
+Но при этом не любить.
+
+Как много тех, с кем можно переспать,
+Но как мало тех, с кем хочется проснуться.
+
+И я больше не найду на свете вот такую,
+На свете нет таких, как ты!
+И очень стыдно перед тобой.
+Не хочу я стать чужим.
+
+Ведь моя любовь — как океан,
+Её не выразить словами!
+Есть только ты,
+Есть только я.
+И эта нежность между нами."""
+]
+
+# Список обращений перед выбором
+greetings = ["Ариша, выбери:", "Солнце, выбери:", "Любовь моя, выбери:"]
+
+# Команда /start
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    greeting = random.choice(greetings)
+    keyboard = [
+        [InlineKeyboardButton("Стих 1", callback_data='0')],
+        [InlineKeyboardButton("Стих 2", callback_data='1')]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    await update.message.reply_text(
+        greeting,
+        reply_markup=reply_markup
+    )
+
+# Команда /poem — тоже вызывает выбор стихов
+async def poem(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    greeting = random.choice(greetings)
+    keyboard = [
+        [InlineKeyboardButton("Стих 1", callback_data='0')],
+        [InlineKeyboardButton("Стих 2", callback_data='1')]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
+    await update.message.reply_text(
+        greeting,
+        reply_markup=reply_markup
+    )
+
+# Обработка нажатий кнопок
+async def button(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+    index = int(query.data)
+    await query.edit_message_text(text=poems[index])
+
+# Основная функция запуска бота
+if __name__ == "__main__":
+    app = ApplicationBuilder().token(TOKEN).build()
+
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("poem", poem))
+    app.add_handler(CallbackQueryHandler(button))
+
+    print("Бот запущен...")
+    app.run_polling()
